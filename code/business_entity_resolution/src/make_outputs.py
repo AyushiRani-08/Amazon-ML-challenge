@@ -60,14 +60,23 @@ def generate_outputs(test_s1_path: str, test_s2_path: str, test_s3_path: str, mo
     print("Output generation complete.")
     
     # Run validation
-    val_script = '../../utils/validate_submission.py'
+    val_script = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../utils/validate_submission.py'))
+    if not os.path.exists(val_script):
+        val_script = 'utils/validate_submission.py'
+        
     if os.path.exists(val_script):
         print("Running validation script...")
-        result = subprocess.run(['py', val_script, output_dir], capture_output=True, text=True)
+        import sys
+        result = subprocess.run([
+            sys.executable, val_script,
+            '--matching', os.path.join(output_dir, 'matching_results.tsv'),
+            '--candidate', os.path.join(output_dir, 'candidate_pairs.tsv'),
+            '--test-dir', os.path.dirname(test_s1_path)
+        ], capture_output=True, text=True)
         if result.returncode == 0:
             print("Validation PASS")
         else:
-            print("Validation FAIL")
+            print("Validation FAIL:")
             print(result.stdout)
             print(result.stderr)
     else:

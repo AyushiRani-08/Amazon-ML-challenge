@@ -32,6 +32,41 @@ def build_token_blocks(df: pd.Series, max_tokens: int = 3) -> pd.DataFrame:
     # return a dataframe with the original index and the token
     return exploded[exploded.str.len() > 3] # only consider tokens length > 3 to avoid stop words matching too much
 
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.neighbors import NearestNeighbors
+
+def build_tfidf_knn_pairs(s1_df: pd.DataFrame, cand_df: pd.DataFrame, top_k: int = 15) -> pd.DataFrame:
+    """
+    Generate candidate pairs using character n-gram TF-IDF Nearest Neighbors.
+    Captures typos, abbreviations, and word order variations with high recall.
+    """
+    s1_text = s1_df['norm_name'].fillna('') + ' ' + s1_df['norm_address'].fillna('')
+    cand_text = cand_df['norm_name'].fillna('') + ' ' + cand_df['norm_address'].fillna('')
+    
+    vec = TfidfVectorizer(analyzer='char_wb', ngram_range=(3, 4), min_df=1, max_features=40000)
+    X_cand = vec.fit_transform(cand_text)
+    X_s1 = vec.transform(s1_text)
+    
+    k = min(top_k, cand_df.shape[0])
+    if k == 0:
+        return pd.DataFrame(columns=['s1_id', 'cand_id'])
+        
+    nn = NearestNeighbors(n_neighbors=k, metric='cosine', algorithm='brute')
+    nn.fit(X_cand)
+    distances, indices = nn.kneighbors(X_s1)
+    
+    s1_ids = s1_df['entity_id'].values
+    cand_ids = cand_df['entity_id'].values
+    
+    rows = []
+    for i in range(len(s1_ids)):
+        curr_s1 = s1_ids[i]
+        for dist, idx in zip(distances[i], indices[i]):
+            if dist < 0.85:
+                rows.append((curr_s1, cand_ids[idx]))
+                
+    return pd.DataFrame(rows, columns=['s1_id', 'cand_id'])
+
 def get_candidate_pairs(s1_df: pd.DataFrame, cand_df: pd.DataFrame, source_name: str) -> pd.DataFrame:
     """
     Generate candidate pairs (S1, S2/S3) using union of multiple blocking strategies.
@@ -89,6 +124,11 @@ def get_candidate_pairs(s1_df: pd.DataFrame, cand_df: pd.DataFrame, source_name:
     
     token_pairs = pd.merge(s1_tokens, cand_tokens, on='block_key')[['s1_id', 'cand_id']]
     pairs_list.append(token_pairs)
+
+    # 4. Character TF-IDF Top-K NearestNeighbors Blocking
+    print(f"[{source_name}] TF-IDF NearestNeighbors blocking...")
+    knn_pairs = build_tfidf_knn_pairs(s1_df, cand_df, top_k=15)
+    pairs_list.append(knn_pairs)
     
     # Union all pairs
     all_pairs = pd.concat(pairs_list, ignore_index=True)

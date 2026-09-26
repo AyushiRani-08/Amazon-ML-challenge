@@ -105,6 +105,15 @@ def extract_address_components(series: pd.Series) -> pd.DataFrame:
     
     return df
 
+def token_sort_text(series: pd.Series) -> pd.Series:
+    """
+    Sort tokens alphabetically to handle word-order permutations.
+    e.g. 'Orelee Barbershop' <-> 'Barbershop Orelee'
+    """
+    if series is None:
+        return series
+    return series.fillna('').astype(str).apply(lambda x: ' '.join(sorted(x.split())))
+
 def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """
     Apply all normalizations to a DataFrame.
@@ -114,6 +123,7 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     if 'business_name' in df.columns:
         df['norm_name'] = normalize_text(df['business_name'])
         df['norm_name'] = normalize_legal_suffixes(df['norm_name'])
+        df['token_sorted_name'] = token_sort_text(df['norm_name'])
         
     if 'business_address' in df.columns:
         df['norm_address'] = normalize_text(df['business_address'])
@@ -131,4 +141,4 @@ if __name__ == "__main__":
     print("Testing normalization...")
     df = pd.read_csv('dataset_sample/train/train_source1.tsv', sep='\t')
     norm_df = process_dataframe(df.head(10))
-    print(norm_df[['business_name', 'norm_name', 'business_address', 'norm_address', 'addr_number', 'addr_postal']])
+    print(norm_df[['business_name', 'norm_name', 'token_sorted_name', 'business_address', 'norm_address', 'addr_number', 'addr_postal']])

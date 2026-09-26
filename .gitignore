@@ -1,0 +1,23 @@
+# Large datasets (MUST NOT push 2.4GB dataset to GitHub)
+dataset/
+
+# Large output files (1.73M generated TSVs, keep repo lightweight)
+output/*.tsv
+
+# Submission archives
+*.zip
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.pkl.bak
+
+# Virtual environments
+venv/
+.env/
+env/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
