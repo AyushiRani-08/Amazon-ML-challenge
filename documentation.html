@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Entity Resolution - ML Pipeline Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            background-color: var(--bg-card);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: var(--accent);
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            padding: 40px 20px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid #334155;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: var(--primary);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+        }
+
+        .card h3 span {
+            background-color: var(--primary);
+            color: white;
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-left: 15px;
+            font-weight: 600;
+        }
+
+        .module-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .module-list li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+        }
+
+        .module-list li::before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        code {
+            background-color: #0f172a;
+            color: #38bdf8;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid var(--success);
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 30px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            width: 100%;
+            border-top: 1px solid #334155;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Amazon ML Challenge 2026</h1>
+        <p style="color: var(--text-muted); font-size: 1.2rem; margin-top: 10px;">Business Entity Resolution Pipeline Documentation</p>
+    </header>
+
+    <div class="container">
+        
+        <div style="margin-bottom: 30px;">
+            <span class="badge">Model: LightGBM</span>
+            <span class="badge">Metric: F-0.5 Score</span>
+            <span class="badge">Stack: Pandas, Scikit-learn, Jellyfish</span>
+        </div>
+
+        <p style="color: var(--text-muted); font-size: 1.1rem;">
+            A complete, end-to-end Machine Learning pipeline tailored for resolving millions of noisy business entity records across multiple sources. The architecture strictly adheres to vectorized operations to bypass row-wise loops, maximizing speed and scalability.
+        </p>
+
+        <h2>Pipeline Architecture</h2>
+
+        <div class="card">
+            <h3>1. Data Normalization <span>normalize.py</span></h3>
+            <ul class="module-list">
+                <li>Applied <strong>Unicode NFKC normalization</strong>, case-folding, and robust punctuation stripping using regex.</li>
+                <li>Implemented a generic <strong>legal-suffix normalization table</strong> (e.g., Corp &rarr; corporation, Pvt &rarr; private, &amp; &rarr; and).</li>
+                <li>Expanded address abbreviations (Rd &rarr; road, St &rarr; street) and extracted core components like postal codes and numbers.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>2. Candidate Generation (Blocking) <span>blocking.py</span></h3>
+            <ul class="module-list">
+                <li>Replaced exhaustive cross-joins with an efficient <strong>Union Blocking Strategy</strong>.</li>
+                <li><strong>Phonetic Blocking:</strong> Applied Jellyfish's Double Metaphone/Soundex on names.</li>
+                <li><strong>Token Overlap:</strong> Exploded the longest token for overlapping constraints.</li>
+                <li><strong>Address Bucket:</strong> Merged directly on extracted postal codes.</li>
+                <li>Included built-in validation logic to track recall @ candidate set & reduction ratios.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>3. Feature Engineering <span>features.py</span></h3>
+            <ul class="module-list">
+                <li>Vectorized complex string similarity algorithms across candidate pairs.</li>
+                <li>Computed <strong>Jaro-Winkler</strong> and <strong>Levenshtein ratios</strong> for Names & Addresses.</li>
+                <li>Generated <strong>Token Jaccard Similarity</strong> & <strong>Numeric Address Overlap</strong>.</li>
+                <li>Implemented <strong>TF-IDF Cosine Similarity</strong> trained dynamically over candidate sets for deeper contextual alignment.</li>
+                <li>Included explicit country matching flags as a feature (preventing hardcoded filtering).</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>4. Model Training <span>train_model.py</span></h3>
+            <ul class="module-list">
+                <li>Dynamically built training datasets matching Ground Truth positives against blocked negative samples.</li>
+                <li>Maintained a rigorous <strong>1:5 Positive-to-Negative ratio</strong> to handle label imbalance.</li>
+                <li>Trained a highly optimized <strong>LightGBM</strong> binary classifier, respecting the strict &lt; 8B parameters rule.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>5. Thresholding & Predictions <span>threshold_and_predict.py</span></h3>
+            <ul class="module-list">
+                <li>Performed aggressive threshold sweeping on validation data to explicitly maximize the <strong>F-0.5 score</strong>.</li>
+                <li>Applied <strong>Global Consistency Resolution</strong> using confidence-based greedy assignments to prevent multiple S1 assignments to the same noisy entity.</li>
+                <li>First-class handling of singleton entities (yielding full F-0.5 credit).</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>6. Custom Evaluation <span>evaluate.py</span></h3>
+            <ul class="module-list">
+                <li>Constructed a customized metric script strictly evaluating the macro-averaged, per-entity <strong>F-0.5 formulation</strong>.</li>
+                <li>Penalizes precision errors 2x over recall, matching hackathon rules exactly.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>7. Submission Generation <span>make_outputs.py</span></h3>
+            <ul class="module-list">
+                <li>Orchestrates the entire pipeline from raw unseen test data straight to required submission TSVs.</li>
+                <li>Outputs strictly tab-separated <code>matching_results.tsv</code> and <code>candidate_pairs.tsv</code>.</li>
+                <li>Automatically shells out to <code>utils/validate_submission.py</code> (if available) for pre-submission sanity checks.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <footer>
+        Built for the Amazon ML Challenge 2026.
+    </footer>
+
+</body>
+</html>
